@@ -4,6 +4,9 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"net"
+	"net/http"
 	"os"
 
 	ma "github.com/multiformats/go-multiaddr"
@@ -37,10 +40,32 @@ func main() {
 	}
 }
 
+func getOutboundIP() (string, error) {
+	resp, err := http.Get("http://ifconfig.me/ip")
+	if err == nil {
+		bytes, err := ioutil.ReadAll(resp.Body)
+		if err == nil {
+			return string(bytes), nil
+		}
+	}
+	return "", err
+}
+
 func localAddresses() []ma.Multiaddr {
 	maddrs, err := manet.InterfaceMultiaddrs()
 	if err != nil {
 		die(err)
+	}
+
+	ip, err := getOutboundIP()
+	if err == nil {
+		addr, err := net.ResolveIPAddr("", ip)
+		if err == nil {
+			multiaddr, err := manet.FromNetAddr(addr)
+			if err == nil {
+				maddrs = append(maddrs, multiaddr)
+			}
+		}
 	}
 
 	if !hideLoopback {
