@@ -41,6 +41,7 @@ func main() {
 }
 
 func getOutboundIP() (string, error) {
+	fmt.Println("get outbound ip")
 	resp, err := http.Get("http://ifconfig.me/ip")
 	if err == nil {
 		bytes, err := ioutil.ReadAll(resp.Body)
