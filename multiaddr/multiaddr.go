@@ -19,6 +19,7 @@ var format string
 var hideLoopback bool
 
 func init() {
+	fmt.Println("multiaddr init...")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "usage: %s [<multiaddr>]\n\nFlags:\n", os.Args[0])
 		flag.PrintDefaults()
